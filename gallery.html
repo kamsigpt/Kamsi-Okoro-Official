@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Official Kamsi Okoro.com</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<canvas id="ripple-canvas"></canvas>
+<div class="grain-overlay"></div>
+<div id="cursor-dot"></div>
+<div id="cursor-circle"></div>
+
+<header class="top-bar">
+  <div class="top-bar-left">
+    <button class="hamburger-btn" aria-label="Toggle menu">
+      <div class="hamburger-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </button>
+  </div>
+  <div class="top-bar-right">
+    <div class="theme-toggle">
+      <div class="toggle-track">
+        <span class="toggle-thumb"></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<aside class="sidebar">
+  <nav class="nav-links">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="works.html">Works</a>
+    <a class="nav-link active" href="gallery.html">Gallery</a>
+    <a class="nav-link nav-link-cert" href="certificatiions.html" data-short="CERTIF..." data-full="CERTIFICATION">CERTIF...</a>
+  </nav>
+  <div class="social-icons">
+    <a href="https://www.linkedin.com/in/kamsiokoro" target="_blank" title="LinkedIn">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+    </a>
+    <a href="https://github.com/kamsigpt" title="GitHub" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+    </a>
+    <a class="email-contact-link" href="mailto:theofficialkamsiokoro@gmail.com" data-email="theofficialkamsiokoro@gmail.com" title="Email">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    </a>
+    <a class="phone-contact-link" href="tel:+2349032736331" data-phone="+2349032736331" title="Phone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.89.33 1.77.63 2.61a2 2 0 0 1-.45 2.11L8.03 9.71a16 16 0 0 0 6.26 6.26l1.27-1.27a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.61.63A2 2 0 0 1 22 16.92z"/></svg>
+    </a>
+    <a class="cv-download-link" href="assets/Kamsi_Okoro_CV.png" download="Kamsi_Okoro_CV.png" data-cv-src="assets/Kamsi_Okoro_CV.png" data-download-name="Kamsi_Okoro_CV.png" title="Download CV">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21c0-4.4-3.6-8-8-8s-8 3.6-8 8"/></svg>
+    </a>
+  </div>
+  <p class="sidebar-copy">&copy; 2026</p>
+</aside>
+<div class="sidebar-overlay"></div>
+
+<main class="main-content">
+  <div class="gallery-page">
+    <div class="gallery-header">
+      <span class="gallery-title">Design Gallery</span>
+      <p class="gallery-subtitle">My curated archive of graphic and brand design work — featuring identity systems, campaign visuals, and the creative direction behind each project.</p>
+    </div>
+
+    <div class="gallery-grid">
+      <div class="gallery-item" id="lumis-brand-mark" data-image-src="assets/gallery/design-for-port-2.jpg">
+        <img class="gallery-image" src="assets/gallery/design-for-port-2.jpg" alt="The Future Of Living architecture concept poster" loading="lazy">
+        <div class="gallery-info">
+          <span class="gallery-name">The Future Of Living</span>
+          <span class="gallery-category">Architecture Visual</span>
+        </div>
+      </div>
+
+      <div class="gallery-item" id="orbit-ui-components" data-image-src="assets/gallery/tech-design.png">
+        <img class="gallery-image" src="assets/gallery/tech-design.png" alt="Think Beyond AI-powered innovation design" loading="lazy">
+        <div class="gallery-info">
+          <span class="gallery-name">Think Beyond</span>
+          <span class="gallery-category">UI / Tech Campaign</span>
+        </div>
+      </div>
+
+      <div class="gallery-item" id="vertex-colour-system" data-image-src="assets/gallery/vendtill-1.jpg">
+        <img class="gallery-image" src="assets/gallery/vendtill-1.jpg" alt="Vendtill sales product ad design" loading="lazy">
+        <div class="gallery-info">
+          <span class="gallery-name">Vendtill Sales Ad</span>
+          <span class="gallery-category">Product Marketing</span>
+        </div>
+      </div>
+
+      <div class="gallery-item" id="grid-poster-series" data-image-src="assets/gallery/static-ghost.png">
+        <img class="gallery-image" src="assets/gallery/static-ghost.png" alt="Static Ghost fashion limited drop poster" loading="lazy">
+        <div class="gallery-info">
+          <span class="gallery-name">Static Ghost</span>
+          <span class="gallery-category">Fashion Poster</span>
+        </div>
+      </div>
+
+      <div class="gallery-item" id="bloom-ritual" data-image-src="assets/gallery/bloom-ritual.png">
+        <img class="gallery-image" src="assets/gallery/bloom-ritual.png" alt="Bloom Ritual hair care campaign design" loading="lazy">
+        <div class="gallery-info">
+          <span class="gallery-name">Bloom Ritual</span>
+          <span class="gallery-category">Beauty Campaign</span>
+        </div>
+      </div>
+
+      <div class="gallery-item" id="business-card" data-image-src="assets/gallery/business-card.png">
+        <img class="gallery-image" src="assets/gallery/business-card.png" alt="Bold Creative agency business card design" loading="lazy">
+        <div class="gallery-info">
+          <span class="gallery-name">Bold Creative Card</span>
+          <span class="gallery-category">Brand Identity</span>
+        </div>
+      </div>
+
+      <div class="gallery-item" id="feast-grid" data-image-src="assets/gallery/feast-grid.png">
+        <img class="gallery-image" src="assets/gallery/feast-grid.png" alt="Feast Grid restaurant menu design" loading="lazy">
+        <div class="gallery-info">
+          <span class="gallery-name">Feast Grid</span>
+          <span class="gallery-category">Menu Design</span>
+        </div>
+      </div>
+
+      <div class="gallery-item" id="hyle-studios" data-image-src="assets/gallery/hyle-studios.png">
+        <img class="gallery-image" src="assets/gallery/hyle-studios.png" alt="Hyle Studios logo design" loading="lazy">
+        <div class="gallery-info">
+          <span class="gallery-name">Hyle Studios</span>
+          <span class="gallery-category">Logo Design</span>
+        </div>
+      </div>
+
+      <div class="gallery-item" id="sheo-design" data-image-src="assets/gallery/sheo-design.png">
+        <img class="gallery-image" src="assets/gallery/sheo-design.png" alt="Sheo engineered footwear poster design" loading="lazy">
+        <div class="gallery-info">
+          <span class="gallery-name">Sheo Design</span>
+          <span class="gallery-category">Product Poster</span>
+        </div>
+      </div>
+
+      <div class="gallery-item" id="smartraq-mark" data-image-src="assets/gallery/smartraq-1.png">
+        <img class="gallery-image" src="assets/gallery/smartraq-1.png" alt="SmartraQ logo wordmark" loading="lazy">
+        <div class="gallery-info">
+          <span class="gallery-name">SmartraQ</span>
+          <span class="gallery-category">Wordmark</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="js/main.js"></script>
+</body>
+</html>
