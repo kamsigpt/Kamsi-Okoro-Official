@@ -87,6 +87,23 @@ document.addEventListener('click', function (e) {
     setTimeout(() => ripple.remove(), 600);
 });
 
+document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+
+    const btn = e.target.closest('.ripple-btn');
+    if (!btn) return;
+
+    const rect = btn.getBoundingClientRect();
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple-effect';
+    ripple.style.left = `${rect.width / 2}px`;
+    ripple.style.top = `${rect.height / 2}px`;
+    ripple.style.width = ripple.style.height = `${Math.max(rect.width, rect.height)}px`;
+
+    btn.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 800);
+});
+
 /* -- CURSOR -- */
 (function initCursor() {
     const dot = document.getElementById('cursor-dot');
@@ -734,6 +751,12 @@ function initFadeUp() {
     let viewportHeight = window.innerHeight;
     let dpr = Math.min(window.devicePixelRatio || 1, 2);
 
+    function setTrackState(activeStep) {
+        tracks.forEach(track => {
+            track.style.setProperty('--toggle-x', activeStep === 1 ? '76%' : '24%');
+        });
+    }
+
     function applyTheme(nextStep = step) {
         const safeStep = ((nextStep % themes.length) + themes.length) % themes.length;
         const nextTheme = themes[safeStep];
@@ -743,6 +766,7 @@ function initFadeUp() {
             track.dataset.step = safeStep;
             track.setAttribute('aria-pressed', String(safeStep === 1));
         });
+        setTrackState(safeStep);
     }
 
     function updateViewport() {
@@ -772,6 +796,8 @@ function initFadeUp() {
         const endRadius = getMaxRadius(originX, originY);
 
         try {
+            document.body.classList.add('theme-animating');
+            tracks.forEach(track => track.classList.add('is-animating'));
             const transition = document.startViewTransition(() => {
                 applyTheme(nextStep);
             });
@@ -797,6 +823,9 @@ function initFadeUp() {
             return true;
         } catch (error) {
             return false;
+        } finally {
+            document.body.classList.remove('theme-animating');
+            tracks.forEach(track => track.classList.remove('is-animating'));
         }
     }
 
@@ -808,18 +837,22 @@ function initFadeUp() {
 
         updateViewport();
         canvas.style.opacity = '1';
+        document.body.classList.add('theme-animating');
+        tracks.forEach(track => track.classList.add('is-animating'));
 
         const rippleColor = rippleColors[themes[nextStep]];
         const maxRadius = getMaxRadius(originX, originY) * 1.08;
-        const duration = 520;
-        const switchAt = 0.36;
+        const ringColor = themes[nextStep] === 'light' ? '0, 0, 0' : '255, 255, 255';
+        const duration = 720;
+        const switchAt = 0.32;
         const startTime = performance.now();
         let appliedTheme = false;
 
         return new Promise(resolve => {
             function frame(now) {
                 const t = Math.min((now - startTime) / duration, 1);
-                const eased = 1 - Math.pow(1 - t, 3);
+                const eased = 1 - Math.pow(1 - t, 4);
+                const pulse = 1 - Math.abs((t * 2) - 1);
 
                 if (!appliedTheme && t >= switchAt) {
                     applyTheme(nextStep);
@@ -832,6 +865,15 @@ function initFadeUp() {
                 ctx.fillStyle = rippleColor;
                 ctx.fill();
 
+                ctx.beginPath();
+                ctx.arc(originX, originY, Math.max(0, eased * maxRadius * 0.96), 0, Math.PI * 2);
+                ctx.lineWidth = 4 + (pulse * 10);
+                ctx.strokeStyle = `rgba(${ringColor}, ${0.18 + (pulse * 0.2)})`;
+                ctx.shadowBlur = 24;
+                ctx.shadowColor = `rgba(${ringColor}, ${0.22 + (pulse * 0.2)})`;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+
                 if (t < 1) {
                     requestAnimationFrame(frame);
                     return;
@@ -843,6 +885,8 @@ function initFadeUp() {
 
                 ctx.clearRect(0, 0, viewportWidth, viewportHeight);
                 canvas.style.opacity = '0';
+                document.body.classList.remove('theme-animating');
+                tracks.forEach(track => track.classList.remove('is-animating'));
                 setTimeout(resolve, 180);
             }
 
@@ -860,14 +904,19 @@ function initFadeUp() {
         const originY = rect.top + rect.height / 2;
         const nextStep = (step + 1) % themes.length;
 
-        const usedViewTransition = await playViewTransition(originX, originY, nextStep);
-        if (!usedViewTransition) {
-            await playCanvasRipple(originX, originY, nextStep);
-        }
+        try {
+            const usedViewTransition = await playViewTransition(originX, originY, nextStep);
+            if (!usedViewTransition) {
+                await playCanvasRipple(originX, originY, nextStep);
+            }
 
-        step = nextStep;
-        localStorage.setItem('themeStep', String(step));
-        animating = false;
+            step = nextStep;
+            localStorage.setItem('themeStep', String(step));
+        } finally {
+            document.body.classList.remove('theme-animating');
+            tracks.forEach(toggleTrack => toggleTrack.classList.remove('is-animating'));
+            animating = false;
+        }
     }
 
     tracks.forEach(track => {
