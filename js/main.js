@@ -67,38 +67,7 @@
 })();
 
 /* -- INTERACTIVE SURFACE MOTION -- */
-(function initInteractiveSurfaceMotion() {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
-    if (reducedMotion || coarsePointer) return;
-
-    const surfaces = document.querySelectorAll(
-        '.service-item, .featured-item, .cert-item, .gallery-item, .contact-card, .cert-card'
-    );
-    if (!surfaces.length) return;
-
-    surfaces.forEach(surface => {
-        surface.addEventListener('pointermove', event => {
-            const rect = surface.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-            const px = x / rect.width;
-            const py = y / rect.height;
-
-            surface.style.setProperty('--mx', `${px * 100}%`);
-            surface.style.setProperty('--my', `${py * 100}%`);
-            surface.style.setProperty('--tilt-x', `${(0.5 - py) * 4}deg`);
-            surface.style.setProperty('--tilt-y', `${(px - 0.5) * 5}deg`);
-        });
-
-        surface.addEventListener('pointerleave', () => {
-            surface.style.setProperty('--mx', '50%');
-            surface.style.setProperty('--my', '50%');
-            surface.style.setProperty('--tilt-x', '0deg');
-            surface.style.setProperty('--tilt-y', '0deg');
-        });
-    });
-})();
+// Removed: tilt transforms were causing lag on low-end devices
 
 /* -- LOADER -- */
 (function initLoader() {
@@ -141,75 +110,58 @@ function initFadeUp() {
 
 /* -- PARALLAX EFFECT -- */
 (function initParallax() {
-    const parallaxElements = document.querySelectorAll('.parallax-image');
-    if (!parallaxElements.length) return;
-
-    function updateParallax() {
-        const scrollY = window.scrollY;
-
-        parallaxElements.forEach(el => {
-            const speed = 0.1;
-            const yPos = -(scrollY * speed);
-            el.style.transform = `translateY(${yPos}px)`;
-        });
-
-        requestAnimationFrame(updateParallax);
-    }
-
-    updateParallax();
+    // Removed: was causing continuous rAF loop and lag
 })();
 
-/* -- WORKS SCROLL NAVIGATION -- */
-(function initWorksScrollNav() {
-    const projectsContainer = document.querySelector('[data-works-projects]');
-    if (!projectsContainer) return;
+/* -- WORKS CAROUSEL NAVIGATION -- */
+(function initWorksCarousel() {
+    const stage = document.querySelector('[data-works-stage]');
+    if (!stage) return;
 
-    const sections = projectsContainer.querySelectorAll('[data-work-section]');
+    const mediaContainer = stage.querySelector('[data-works-media-container]');
     const prevBtn = document.querySelector('[data-works-prev]');
     const nextBtn = document.querySelector('[data-works-next]');
-    if (!sections.length || !prevBtn || !nextBtn) return;
+    const allMedia = stage.querySelectorAll('[data-works-media]');
+    const allInfo = stage.querySelectorAll('[data-works-info]');
+    if (!mediaContainer || !prevBtn || !nextBtn || !allMedia.length || !allInfo.length) return;
 
+    const total = allMedia.length;
     let currentIndex = 0;
-    const total = sections.length;
+    let animating = false;
 
     function updateArrows() {
         prevBtn.classList.toggle('hidden', currentIndex === 0);
         nextBtn.classList.toggle('hidden', currentIndex === total - 1);
     }
 
-    function scrollToSection(index) {
-        if (index < 0 || index >= total) return;
+    function goTo(index) {
+        if (index < 0 || index >= total || index === currentIndex || animating) return;
+        animating = true;
+
+        allMedia[currentIndex].classList.remove('active');
+        allInfo[currentIndex].classList.remove('active');
+
         currentIndex = index;
-        sections[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        allMedia[currentIndex].classList.add('active');
+        allInfo[currentIndex].classList.add('active');
+
         updateArrows();
+        setTimeout(() => { animating = false; }, 420);
     }
 
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const idx = Number.parseInt(entry.target.dataset.workSection, 10);
-                if (Number.isFinite(idx)) {
-                    currentIndex = idx;
-                    updateArrows();
-                }
-            }
-        });
-    }, { threshold: 0.35 });
-
-    sections.forEach(section => observer.observe(section));
-
-    prevBtn.addEventListener('click', () => scrollToSection(currentIndex - 1));
-    nextBtn.addEventListener('click', () => scrollToSection(currentIndex + 1));
+    prevBtn.addEventListener('click', () => goTo(currentIndex - 1));
+    nextBtn.addEventListener('click', () => goTo(currentIndex + 1));
 
     document.addEventListener('keydown', event => {
-        if (!projectsContainer.isConnected) return;
+        if (!stage.isConnected) return;
         if (event.key === 'ArrowUp') {
             event.preventDefault();
-            scrollToSection(currentIndex - 1);
+            goTo(currentIndex - 1);
         }
         if (event.key === 'ArrowDown') {
             event.preventDefault();
-            scrollToSection(currentIndex + 1);
+            goTo(currentIndex + 1);
         }
     });
 
