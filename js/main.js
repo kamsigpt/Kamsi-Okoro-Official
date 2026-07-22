@@ -17,8 +17,6 @@
 (function initTouchSupport() {
     if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
         document.body.classList.add('touch-device');
-        document.getElementById('cursor-dot')?.remove();
-        document.getElementById('cursor-circle')?.remove();
     }
 })();
 
@@ -68,91 +66,6 @@
     });
 })();
 
-/* -- BUTTON RIPPLE EFFECT -- */
-document.addEventListener('click', function (e) {
-    const btn = e.target.closest('.ripple-btn');
-    if (!btn) return;
-
-    const rect = btn.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const ripple = document.createElement('span');
-    ripple.className = 'ripple-effect';
-    ripple.style.left = x + 'px';
-    ripple.style.top = y + 'px';
-    ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
-
-    btn.appendChild(ripple);
-    setTimeout(() => ripple.remove(), 600);
-});
-
-document.addEventListener('keydown', function (e) {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-
-    const btn = e.target.closest('.ripple-btn');
-    if (!btn) return;
-
-    const rect = btn.getBoundingClientRect();
-    const ripple = document.createElement('span');
-    ripple.className = 'ripple-effect';
-    ripple.style.left = `${rect.width / 2}px`;
-    ripple.style.top = `${rect.height / 2}px`;
-    ripple.style.width = ripple.style.height = `${Math.max(rect.width, rect.height)}px`;
-
-    btn.appendChild(ripple);
-    setTimeout(() => ripple.remove(), 800);
-});
-
-/* -- CURSOR -- */
-(function initCursor() {
-    const dot = document.getElementById('cursor-dot');
-    const circle = document.getElementById('cursor-circle');
-    if (!dot || !circle) return;
-    if (document.body.classList.contains('touch-device')) return;
-
-    let dx = 0;
-    let dy = 0;
-    let cx = 0;
-    let cy = 0;
-
-    document.addEventListener('mousemove', e => {
-        dx = e.clientX;
-        dy = e.clientY;
-    });
-
-    function animate() {
-        dot.style.left = dx + 'px';
-        dot.style.top = dy + 'px';
-        cx += (dx - cx) * 0.14;
-        cy += (dy - cy) * 0.14;
-        circle.style.left = cx + 'px';
-        circle.style.top = cy + 'px';
-        requestAnimationFrame(animate);
-    }
-
-    animate();
-
-    if (document.body.classList.contains('touch-device')) return;
-    document.querySelectorAll('a, button, .service-item, .featured-item, .gallery-item, .works-visual, .works-prev, .works-next, .scroll-circle, .social-icons a, .toggle-track').forEach(el => {
-        el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-        el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-    });
-
-    document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
-    document.addEventListener('mouseup', () => document.body.classList.remove('cursor-click'));
-
-    document.addEventListener('mouseleave', () => {
-        dot.style.opacity = '0';
-        circle.style.opacity = '0';
-    });
-
-    document.addEventListener('mouseenter', () => {
-        dot.style.opacity = '1';
-        circle.style.opacity = '1';
-    });
-})();
-
 /* -- INTERACTIVE SURFACE MOTION -- */
 (function initInteractiveSurfaceMotion() {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -187,237 +100,6 @@ document.addEventListener('keydown', function (e) {
     });
 })();
 
-/* -- CURSOR FLOW RIPPLE -- */
-(function initCursorFlowRipple() {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
-    if (reducedMotion || coarsePointer || document.body.classList.contains('touch-device')) return;
-
-    const canvas = document.createElement('canvas');
-    canvas.id = 'cursor-flow-canvas';
-    canvas.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(canvas);
-
-    const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
-    if (!ctx) return;
-
-    let viewportWidth = window.innerWidth;
-    let viewportHeight = window.innerHeight;
-    let dpr = Math.min(window.devicePixelRatio || 1, 1.75);
-
-    function resizeCanvas() {
-        viewportWidth = window.innerWidth;
-        viewportHeight = window.innerHeight;
-        dpr = Math.min(window.devicePixelRatio || 1, 1.75);
-
-        canvas.width = Math.floor(viewportWidth * dpr);
-        canvas.height = Math.floor(viewportHeight * dpr);
-        canvas.style.width = `${viewportWidth}px`;
-        canvas.style.height = `${viewportHeight}px`;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    const ripples = [];
-    const trails = [];
-    const MAX_RIPPLES = 28;
-    const MAX_TRAILS = 44;
-
-    let pointerX = viewportWidth * 0.5;
-    let pointerY = viewportHeight * 0.5;
-    let pointerVisible = false;
-    let lastX = pointerX;
-    let lastY = pointerY;
-    let lastMoveAt = performance.now();
-    let lastSpawnAt = 0;
-    let lastTrailAt = 0;
-    let lastHoverPulseAt = 0;
-    let framePrev = performance.now();
-
-    function isLightTheme() {
-        return document.documentElement.getAttribute('data-theme') === 'light';
-    }
-
-    function getPalette() {
-        if (isLightTheme()) {
-            return {
-                ring: '0, 0, 0',
-                glow: '24, 24, 24',
-                trail: '0, 0, 0'
-            };
-        }
-
-        return {
-            ring: '255, 255, 255',
-            glow: '255, 255, 255',
-            trail: '255, 255, 255'
-        };
-    }
-
-    function addRipple(x, y, force = 1) {
-        const hoverBoost = document.body.classList.contains('cursor-hover') ? 1.12 : 1;
-        const strength = Math.min(Math.max(force * hoverBoost, 0.5), 1.6);
-        const lightThemeBoost = isLightTheme() ? 1.42 : 1;
-
-        ripples.push({
-            x,
-            y,
-            radius: 1,
-            alpha: 0.11 * strength * lightThemeBoost,
-            width: 0.9 + (strength * 0.55),
-            speed: 34 + (strength * 22),
-            maxRadius: 68 + (strength * 72),
-            driftX: (Math.random() - 0.5) * 4,
-            driftY: (Math.random() - 0.5) * 4,
-            phase: Math.random() * Math.PI * 2
-        });
-
-        if (ripples.length > MAX_RIPPLES) {
-            ripples.shift();
-        }
-    }
-
-    function addTrail(x, y, speed = 0) {
-        const lightThemeBoost = isLightTheme() ? 1.35 : 1;
-
-        trails.push({
-            x,
-            y,
-            radius: 7 + Math.min(speed * 0.12, 12),
-            alpha: (0.035 + Math.min(speed * 0.00065, 0.07)) * lightThemeBoost
-        });
-
-        if (trails.length > MAX_TRAILS) {
-            trails.shift();
-        }
-    }
-
-    document.addEventListener('mousemove', event => {
-        pointerX = event.clientX;
-        pointerY = event.clientY;
-        pointerVisible = true;
-
-        const now = performance.now();
-        const dx = pointerX - lastX;
-        const dy = pointerY - lastY;
-        const distance = Math.hypot(dx, dy);
-        const delta = Math.max(now - lastMoveAt, 16);
-        const velocity = distance / delta;
-
-        if (distance > 6 && now - lastSpawnAt > 52) {
-            addRipple(pointerX, pointerY, 0.62 + velocity * 2.1);
-            lastSpawnAt = now;
-        }
-
-        if (now - lastTrailAt > 24) {
-            addTrail(pointerX, pointerY, distance / (delta / 16));
-            lastTrailAt = now;
-        }
-
-        lastX = pointerX;
-        lastY = pointerY;
-        lastMoveAt = now;
-    });
-
-    document.addEventListener('mousedown', event => {
-        addRipple(event.clientX, event.clientY, 1.4);
-    });
-
-    document.addEventListener('mouseleave', () => {
-        pointerVisible = false;
-    });
-
-    document.addEventListener('mouseenter', () => {
-        pointerVisible = true;
-    });
-
-    function drawFrame(now) {
-        const dt = Math.min((now - framePrev) / 16.666, 2);
-        framePrev = now;
-
-        const lightTheme = isLightTheme();
-        const colors = getPalette();
-
-        ctx.clearRect(0, 0, viewportWidth, viewportHeight);
-        ctx.save();
-        ctx.globalCompositeOperation = 'source-over';
-
-        for (let i = trails.length - 1; i >= 0; i -= 1) {
-            const trail = trails[i];
-            trail.alpha *= Math.pow(0.95, dt);
-            trail.radius *= Math.pow(0.998, dt);
-
-            if (trail.alpha < 0.01) {
-                trails.splice(i, 1);
-                continue;
-            }
-
-            ctx.beginPath();
-            ctx.fillStyle = `rgba(${colors.trail}, ${trail.alpha})`;
-            ctx.arc(trail.x, trail.y, trail.radius, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        for (let i = ripples.length - 1; i >= 0; i -= 1) {
-            const ripple = ripples[i];
-            ripple.radius += ripple.speed * dt * 0.042;
-            ripple.alpha *= Math.pow(0.978, dt);
-
-            if (ripple.alpha < 0.005 || ripple.radius > ripple.maxRadius) {
-                ripples.splice(i, 1);
-                continue;
-            }
-
-            const driftFactor = ripple.radius / ripple.maxRadius;
-            const wobble = Math.sin((now * 0.0032) + ripple.phase) * 0.35;
-            const drawX = ripple.x + (ripple.driftX * driftFactor) + wobble;
-            const drawY = ripple.y + (ripple.driftY * driftFactor) + (wobble * 0.6);
-
-            ctx.beginPath();
-            ctx.lineWidth = ripple.width;
-            ctx.strokeStyle = `rgba(${colors.ring}, ${ripple.alpha})`;
-            ctx.shadowBlur = 7;
-            ctx.shadowColor = `rgba(${colors.glow}, ${ripple.alpha * 0.38})`;
-            ctx.arc(drawX, drawY, ripple.radius, 0, Math.PI * 2);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.lineWidth = Math.max(0.45, ripple.width * 0.5);
-            ctx.strokeStyle = `rgba(${colors.glow}, ${ripple.alpha * 0.32})`;
-            ctx.shadowBlur = 0;
-            ctx.arc(drawX, drawY, ripple.radius * 0.58, 0, Math.PI * 2);
-            ctx.stroke();
-        }
-
-        if (pointerVisible) {
-            const hoverActive = document.body.classList.contains('cursor-hover');
-            const hoverBoost = hoverActive ? 1.15 : 1;
-            const pulseDelay = hoverActive ? 220 : 320;
-
-            if (now - lastHoverPulseAt > pulseDelay) {
-                addRipple(pointerX, pointerY, 0.38 * hoverBoost);
-                lastHoverPulseAt = now;
-            }
-
-            const glowRadius = 56 * hoverBoost;
-            const glow = ctx.createRadialGradient(pointerX, pointerY, 0, pointerX, pointerY, glowRadius);
-            glow.addColorStop(0, `rgba(${colors.glow}, ${0.05 * hoverBoost})`);
-            glow.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = glow;
-            ctx.beginPath();
-            ctx.arc(pointerX, pointerY, glowRadius, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        ctx.restore();
-        requestAnimationFrame(drawFrame);
-    }
-
-    requestAnimationFrame(drawFrame);
-})();
-
 /* -- LOADER -- */
 (function initLoader() {
     const loader = document.querySelector('.loader');
@@ -435,7 +117,7 @@ document.addEventListener('keydown', function (e) {
             loader.classList.add('hidden');
             document.body.classList.remove('loading');
             initFadeUp();
-        }, 2000);
+        }, 800);
     });
 })();
 
@@ -699,7 +381,7 @@ function initFadeUp() {
 
         if (!instant && !prefersReducedMotion) {
             showcase.classList.add('is-changing');
-            window.setTimeout(() => showcase.classList.remove('is-changing'), 170);
+            window.setTimeout(() => showcase.classList.remove('is-changing'), 120);
         }
 
         titleEl.textContent = project.title;
@@ -812,7 +494,7 @@ function initFadeUp() {
                     ]
                 },
                 {
-                    duration: 560,
+                    duration: 380,
                     easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
                     pseudoElement: '::view-transition-new(root)'
                 }
@@ -843,7 +525,7 @@ function initFadeUp() {
         const rippleColor = rippleColors[themes[nextStep]];
         const maxRadius = getMaxRadius(originX, originY) * 1.08;
         const ringColor = themes[nextStep] === 'light' ? '0, 0, 0' : '255, 255, 255';
-        const duration = 720;
+        const duration = 480;
         const switchAt = 0.32;
         const startTime = performance.now();
         let appliedTheme = false;
@@ -887,7 +569,7 @@ function initFadeUp() {
                 canvas.style.opacity = '0';
                 document.body.classList.remove('theme-animating');
                 tracks.forEach(track => track.classList.remove('is-animating'));
-                setTimeout(resolve, 180);
+                setTimeout(resolve, 120);
             }
 
             requestAnimationFrame(frame);
@@ -946,34 +628,6 @@ function initFadeUp() {
         if (href && (current.includes(href.replace('.html', '')) || (current === 'index.html' && href === 'index.html'))) {
             link.classList.add('active');
         }
-    });
-})();
-
-/* -- CERT NAV LABEL -- */
-(function initCertNavLabel() {
-    const certLinks = document.querySelectorAll('.nav-link-cert');
-    if (!certLinks.length) return;
-
-    certLinks.forEach(link => {
-        const shortLabel = link.dataset.short || 'CERTIF...';
-        const fullLabel = link.dataset.full || 'CERTIFICATION';
-
-        link.textContent = shortLabel;
-
-        const expand = () => {
-            link.textContent = fullLabel;
-            link.classList.add('is-expanded');
-        };
-
-        const collapse = () => {
-            link.textContent = shortLabel;
-            link.classList.remove('is-expanded');
-        };
-
-        link.addEventListener('mouseenter', expand);
-        link.addEventListener('mouseleave', collapse);
-        link.addEventListener('focus', expand);
-        link.addEventListener('blur', collapse);
     });
 })();
 
