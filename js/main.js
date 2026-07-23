@@ -113,59 +113,17 @@ function initFadeUp() {
     // Removed: was causing continuous rAF loop and lag
 })();
 
-/* -- WORKS CAROUSEL NAVIGATION -- */
-(function initWorksCarousel() {
-    const stage = document.querySelector('[data-works-stage]');
-    if (!stage) return;
+/* -- WORKS MEDIA CLICK TO OPEN -- */
+(function initWorksMediaOpen() {
+    const mediaContainer = document.querySelector('[data-works-media-container]');
+    if (!mediaContainer) return;
 
-    const mediaContainer = stage.querySelector('[data-works-media-container]');
-    const prevBtn = document.querySelector('[data-works-prev]');
-    const nextBtn = document.querySelector('[data-works-next]');
-    const allMedia = stage.querySelectorAll('[data-works-media]');
-    const allInfo = stage.querySelectorAll('[data-works-info]');
-    if (!mediaContainer || !prevBtn || !nextBtn || !allMedia.length || !allInfo.length) return;
-
-    const total = allMedia.length;
-    let currentIndex = 0;
-    let animating = false;
-
-    function updateArrows() {
-        prevBtn.classList.toggle('hidden', currentIndex === 0);
-        nextBtn.classList.toggle('hidden', currentIndex === total - 1);
-    }
-
-    function goTo(index) {
-        if (index < 0 || index >= total || index === currentIndex || animating) return;
-        animating = true;
-
-        allMedia[currentIndex].classList.remove('active');
-        allInfo[currentIndex].classList.remove('active');
-
-        currentIndex = index;
-
-        allMedia[currentIndex].classList.add('active');
-        allInfo[currentIndex].classList.add('active');
-
-        updateArrows();
-        setTimeout(() => { animating = false; }, 420);
-    }
-
-    prevBtn.addEventListener('click', () => goTo(currentIndex - 1));
-    nextBtn.addEventListener('click', () => goTo(currentIndex + 1));
-
-    document.addEventListener('keydown', event => {
-        if (!stage.isConnected) return;
-        if (event.key === 'ArrowUp') {
-            event.preventDefault();
-            goTo(currentIndex - 1);
-        }
-        if (event.key === 'ArrowDown') {
-            event.preventDefault();
-            goTo(currentIndex + 1);
-        }
+    mediaContainer.addEventListener('click', () => {
+        const activeMedia = mediaContainer.querySelector('.work-media.active');
+        if (!activeMedia) return;
+        const src = activeMedia.dataset.worksSrc || activeMedia.src;
+        if (src) window.open(src, '_blank', 'noopener,noreferrer');
     });
-
-    updateArrows();
 })();
 
 /* -- THEME TOGGLE -- */

@@ -555,7 +555,7 @@ body.site-ready .main-content {
 }
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
 .gallery-item {
@@ -827,8 +827,6 @@ body.site-ready .main-content {
   --works-accent: #d8c3a0;
   --works-block-label: rgba(255,255,255,0.5);
   --works-stack-bg: rgba(255,255,255,0.04);
-  --works-arrow-bg: #ffffff;
-  --works-arrow-color: #111111;
   background: var(--works-bg);
   color: var(--works-text);
 }
@@ -841,17 +839,13 @@ body.site-ready .main-content {
   --works-accent: #1a1a1a;
   --works-block-label: rgba(0,0,0,0.45);
   --works-stack-bg: rgba(0,0,0,0.04);
-  --works-arrow-bg: #111111;
-  --works-arrow-color: #ffffff;
 }
 
 .works-shell {
   max-width: 1400px;
   margin: 0 auto;
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .works-page-header {
@@ -904,6 +898,7 @@ body.site-ready .main-content {
   border-radius: 12px;
   overflow: hidden;
   background: #1a1a1a;
+  cursor: pointer;
 }
 [data-theme="light"] .work-media-container {
   background: #e0ddd8;
@@ -926,33 +921,24 @@ body.site-ready .main-content {
 .works-right {
   display: flex;
   align-items: flex-start;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: visible;
   position: relative;
   padding-top: clamp(12px, 2vh, 24px);
-  -webkit-overflow-scrolling: touch;
 }
 
 .work-info {
-  position: absolute;
-  inset: 0;
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: flex-start;
-  max-height: 100%;
-  overflow-y: auto;
   padding: clamp(12px, 2vh, 24px) 0;
-  padding-right: 12px;
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.35s var(--ease-out), transform 0.35s var(--ease-out);
-  pointer-events: none;
 }
 .work-info.active {
-  position: relative;
+  display: flex;
   opacity: 1;
   transform: translateY(0);
-  pointer-events: auto;
 }
 
 .work-counter {
@@ -1052,67 +1038,12 @@ body.site-ready .main-content {
 }
 .work-view-btn:hover {
   transform: translateY(-2px);
-  background: var(--works-accent);
-  border-color: var(--works-accent);
-  color: #fff;
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #000000;
 }
 .work-view-btn:hover svg {
   transform: translateX(3px);
-}
-
-/* Works Arrow Navigation */
-.works-nav-arrows {
-  position: fixed;
-  top: 50%;
-  right: clamp(16px, 2vw, 32px);
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  z-index: 80;
-}
-
-.works-arrow {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.18);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  color: rgba(255,255,255,0.7);
-  transition: transform 0.25s var(--ease-smooth), opacity 0.25s, background 0.25s;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-}
-[data-theme="light"] .works-arrow {
-  border-color: rgba(0,0,0,0.12);
-  background: rgba(0,0,0,0.06);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  color: rgba(0,0,0,0.6);
-}
-.works-arrow svg {
-  width: 16px;
-  height: 16px;
-}
-.works-arrow:hover {
-  transform: scale(1.1);
-  background: rgba(255,255,255,0.16);
-}
-[data-theme="light"] .works-arrow:hover {
-  background: rgba(0,0,0,0.1);
-}
-.works-arrow:active {
-  transform: scale(0.92);
-}
-.works-arrow.hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(8px);
 }
 
 /* Works responsive */
@@ -1134,25 +1065,10 @@ body.site-ready .main-content {
     aspect-ratio: 16 / 10;
   }
   .work-info {
-    position: relative;
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
+    display: none;
   }
-  .works-nav-arrows {
-    top: auto;
-    bottom: 16px;
-    right: 12px;
-    transform: none;
-    flex-direction: row;
-  }
-  .works-arrow {
-    width: 32px;
-    height: 32px;
-  }
-  .works-arrow svg {
-    width: 14px;
-    height: 14px;
+  .work-info.active {
+    display: flex;
   }
 }
 
