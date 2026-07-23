@@ -562,12 +562,15 @@ body.site-ready .main-content {
   background: var(--gallery-surface);
   border: 1px solid var(--gallery-border);
   border-radius: 12px;
-  padding: 12px;
+  padding: 24px 22px;
   box-shadow: var(--gallery-shadow);
   cursor: pointer;
   outline: none;
   position: relative;
   overflow: hidden;
+  min-height: 238px;
+  display: flex;
+  flex-direction: column;
   transition: border-color 0.25s var(--ease-out), box-shadow 0.3s var(--ease-smooth), transform 0.3s var(--ease-smooth);
 }
 .gallery-item:hover {
@@ -614,8 +617,8 @@ body.site-ready .main-content {
 }
 .gallery-image {
   width: 100%;
-  aspect-ratio: 16 / 10;
-  border-radius: 8px;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
   object-fit: cover;
   background: rgba(255,255,255,0.04);
   display: block;
@@ -1053,7 +1056,7 @@ body.site-ready .main-content {
   margin-top: clamp(12px, 1.5vw, 20px);
 }
 
-.work-next-btn {
+.work-nav-btn {
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -1067,22 +1070,25 @@ body.site-ready .main-content {
   flex-shrink: 0;
   transition: transform 0.3s var(--ease-smooth), background 0.25s, border-color 0.25s, color 0.25s;
 }
-[data-theme="light"] .work-next-btn {
+[data-theme="light"] .work-nav-btn {
   border-color: rgba(0,0,0,0.2);
 }
-.work-next-btn svg {
+.work-nav-btn svg {
   width: 16px;
   height: 16px;
   transition: transform 0.25s var(--ease-out);
 }
-.work-next-btn:hover {
+.work-nav-btn:hover {
   transform: translateY(-2px);
   background: #ffffff;
   border-color: #ffffff;
   color: #000000;
 }
-.work-next-btn:hover svg {
+.work-nav-btn:hover svg {
   transform: translateX(2px);
+}
+.work-prev-btn:hover svg {
+  transform: translateX(-2px);
 }
 
 /* Works responsive */

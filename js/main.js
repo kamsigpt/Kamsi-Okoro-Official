@@ -126,8 +126,8 @@ function initFadeUp() {
     });
 })();
 
-/* -- WORKS NEXT PROJECT NAVIGATION -- */
-(function initWorksNextNav() {
+/* -- WORKS NEXT/PREV PROJECT NAVIGATION -- */
+(function initWorksNav() {
     const stage = document.querySelector('[data-works-stage]');
     if (!stage) return;
 
@@ -135,9 +135,6 @@ function initFadeUp() {
     const allMedia = stage.querySelectorAll('[data-works-media]');
     const allInfo = stage.querySelectorAll('[data-works-info]');
     if (!mediaContainer || !allMedia.length || !allInfo.length) return;
-
-    const nextBtns = document.querySelectorAll('[data-works-next]');
-    if (!nextBtns.length) return;
 
     const total = allMedia.length;
     let currentIndex = 0;
@@ -158,11 +155,12 @@ function initFadeUp() {
         setTimeout(() => { animating = false; }, 420);
     }
 
-    nextBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const nextIndex = (currentIndex + 1) % total;
-            goTo(nextIndex);
-        });
+    document.addEventListener('click', e => {
+        const nextBtn = e.target.closest('[data-works-next]');
+        if (nextBtn) goTo((currentIndex + 1) % total);
+
+        const prevBtn = e.target.closest('[data-works-prev]');
+        if (prevBtn) goTo((currentIndex - 1 + total) % total);
     });
 })();
 
