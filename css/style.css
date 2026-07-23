@@ -517,7 +517,7 @@ body.site-ready .main-content {
   --gallery-ph-8: linear-gradient(135deg, #1a1a1a, #111111);
   background: var(--gallery-bg);
   min-height: calc(100vh - 60px);
-  padding: clamp(34px, 4.8vw, 56px) clamp(32px, 5.5vw, 72px) clamp(72px, 8.2vw, 110px);
+  padding: clamp(34px, 4.8vw, 56px) clamp(28px, 5.5vw, 72px) clamp(72px, 8vw, 104px);
 }
 [data-theme="light"] .gallery-page {
   --gallery-bg: #f3f1ed;
@@ -537,6 +537,9 @@ body.site-ready .main-content {
 }
 .gallery-header {
   margin-bottom: 30px;
+  max-width: 1240px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .gallery-title {
   font-family: 'Josefin Sans', sans-serif;
@@ -557,6 +560,8 @@ body.site-ready .main-content {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
+  max-width: 1240px;
+  margin: 0 auto;
 }
 .gallery-item {
   background: var(--gallery-surface);
