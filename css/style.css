@@ -614,7 +614,7 @@ body.site-ready .main-content {
 }
 .gallery-image {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 16 / 10;
   border-radius: 8px;
   object-fit: cover;
   background: rgba(255,255,255,0.04);
@@ -1044,6 +1044,45 @@ body.site-ready .main-content {
 }
 .work-view-btn:hover svg {
   transform: translateX(3px);
+}
+
+.work-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: clamp(12px, 1.5vw, 20px);
+}
+
+.work-next-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: transparent;
+  color: var(--works-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.3s var(--ease-smooth), background 0.25s, border-color 0.25s, color 0.25s;
+}
+[data-theme="light"] .work-next-btn {
+  border-color: rgba(0,0,0,0.2);
+}
+.work-next-btn svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.25s var(--ease-out);
+}
+.work-next-btn:hover {
+  transform: translateY(-2px);
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #000000;
+}
+.work-next-btn:hover svg {
+  transform: translateX(2px);
 }
 
 /* Works responsive */

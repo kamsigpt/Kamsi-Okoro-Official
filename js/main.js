@@ -126,6 +126,46 @@ function initFadeUp() {
     });
 })();
 
+/* -- WORKS NEXT PROJECT NAVIGATION -- */
+(function initWorksNextNav() {
+    const stage = document.querySelector('[data-works-stage]');
+    if (!stage) return;
+
+    const mediaContainer = stage.querySelector('[data-works-media-container]');
+    const allMedia = stage.querySelectorAll('[data-works-media]');
+    const allInfo = stage.querySelectorAll('[data-works-info]');
+    if (!mediaContainer || !allMedia.length || !allInfo.length) return;
+
+    const nextBtns = document.querySelectorAll('[data-works-next]');
+    if (!nextBtns.length) return;
+
+    const total = allMedia.length;
+    let currentIndex = 0;
+    let animating = false;
+
+    function goTo(index) {
+        if (index < 0 || index >= total || index === currentIndex || animating) return;
+        animating = true;
+
+        allMedia[currentIndex].classList.remove('active');
+        allInfo[currentIndex].classList.remove('active');
+
+        currentIndex = index;
+
+        allMedia[currentIndex].classList.add('active');
+        allInfo[currentIndex].classList.add('active');
+
+        setTimeout(() => { animating = false; }, 420);
+    }
+
+    nextBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const nextIndex = (currentIndex + 1) % total;
+            goTo(nextIndex);
+        });
+    });
+})();
+
 /* -- THEME TOGGLE -- */
 (function initThemeToggle() {
     const tracks = document.querySelectorAll('.toggle-track');
