@@ -394,8 +394,8 @@ function initFadeUp() {
     const cvLinks = document.querySelectorAll('.cv-download-link');
     if (!cvLinks.length) return;
 
-    const fallbackSrc = 'assets/Kamsi_Okoro_CV.png';
-    const fallbackName = 'Kamsi_Okoro_CV.png';
+    const fallbackSrc = 'assets/Nedokoro_Kamsiyochi_%E2%80%94_Product_Designer_Portfolio.pdf';
+    const fallbackName = 'Kamsi_Okoro_CV.pdf';
 
     function flashTitle(link, text) {
         const originalTitle = link.getAttribute('title') || 'Download CV';

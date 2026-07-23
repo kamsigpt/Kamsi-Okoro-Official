@@ -2215,9 +2215,13 @@ body.theme-animating .hero-image-wrapper {
   .nav-link {
     width: auto;
     height: auto;
+    gap: 10px;
+    padding: 6px 0;
   }
   .nav-link svg {
-    display: none;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
   }
   .nav-link::before {
     content: attr(title);
